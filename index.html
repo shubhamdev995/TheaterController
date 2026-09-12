@@ -9,7 +9,7 @@
     * { box-sizing:border-box; } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif; color:var(--text); background:linear-gradient(135deg,#10151d,#172333); }
     main { max-width:1200px; margin:auto; padding:24px; } h1 { margin:0 0 4px; font-size:clamp(1.5rem,4vw,2.2rem); } h2 { margin:0 0 14px; font-size:1rem; } .sub,.hint { color:var(--muted); margin:0 0 20px; } .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; } .card { background:rgba(25,33,45,.96); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 12px 35px #0002; }
     label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:5px; } input,button { font:inherit; } input[type="text"],input[type="number"],input[type="file"] { width:100%; color:var(--text); background:#0f1620; border:1px solid var(--line); border-radius:8px; padding:9px; } input:focus { outline:2px solid var(--accent); outline-offset:1px; } button,.button-label { cursor:pointer; border:1px solid var(--line); border-radius:8px; padding:9px 12px; color:var(--text); background:#263346; } button:hover:not(:disabled),.button-label:hover { border-color:var(--accent); } button:disabled { opacity:.45; cursor:not-allowed; } button.primary,.button-label.primary { background:#12799c; border-color:#28bce9; } button.danger { color:#ffd9df; border-color:#8e4052; background:#4c2631; } .button-label { display:inline-block; font-size:15px; }
-    .row { display:flex; gap:9px; align-items:end; } .row > * { min-width:0; flex:1; } .row button { flex:0 0 auto; } audio { width:100%; margin-top:12px; } .seek-bar { display:block; width:100%; height:14px; margin:14px 0 4px; accent-color:var(--accent); cursor:pointer; } .transport { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; } #time { margin-left:auto; align-self:center; color:var(--accent); font-variant-numeric:tabular-nums; }
+    .row { display:flex; gap:9px; align-items:end; } .row > * { min-width:0; flex:1; } .row button { flex:0 0 auto; } audio { width:100%; margin-top:12px; } .seek-bar { display:block; width:100%; height:14px; margin:14px 0 4px; accent-color:var(--accent); cursor:pointer; } .awake-control { display:flex; align-items:center; gap:8px; margin:12px 0 0; color:var(--text); font-size:.9rem; } .awake-control input { width:18px; height:18px; accent-color:var(--accent); } #wakeStatus { color:var(--muted); font-size:.78rem; } .transport { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; } #time { margin-left:auto; align-self:center; color:var(--accent); font-variant-numeric:tabular-nums; }
     .lamp-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; } .lamp { min-height:80px; border-width:2px; } .lamp .bulb { display:block; font-size:1.6rem; filter:grayscale(1); } .lamp.on { color:#132018; background:var(--ok); border-color:#b6ffd5; } .lamp.on .bulb { filter:none; } .lamp small { display:block; margin-top:3px; } .cue-button { min-height:58px; color:#bfefff; background:#183a4d; border-color:#2b9ec7; } .cue-button .plus { display:block; font-size:1.35rem; line-height:1; }
     .timeline-wrap { overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch; touch-action:pan-x; } .timeline { min-width:740px; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#101720; } .ruler { height:32px; border-bottom:1px solid var(--line); position:relative; color:var(--muted); font-size:.72rem; } .tick { position:absolute; bottom:3px; transform:translateX(-50%); } .track { height:48px; border-bottom:1px solid #273245; position:relative; padding:14px 10px; color:var(--muted); font-size:.8rem; } .track:last-child { border:0; } .event { position:absolute; top:8px; height:30px; min-width:5px; border:0; padding:0 5px; border-radius:5px; background:var(--lamp); color:#061017; overflow:hidden; white-space:nowrap; font-size:.72rem; text-align:left; } .playhead { position:absolute; top:0; bottom:0; width:2px; background:#ff617c; pointer-events:none; z-index:5; } .playhead::before { content:""; position:absolute; top:0; left:-4px; border:5px solid transparent; border-top-color:#ff617c; }
     table { width:100%; border-collapse:collapse; } th,td { padding:8px 5px; border-bottom:1px solid #2a3547; text-align:left; vertical-align:middle; } th { color:var(--muted); font-weight:500; font-size:.78rem; } td input { min-width:73px; padding:7px; } .lamp-group td { padding:9px 5px; color:var(--text); background:#202a38; font-weight:650; } .empty-cues { color:var(--muted); font-style:italic; } .events-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-top:14px; } #message { min-height:1.4em; margin:12px 0 0; color:var(--muted); } #message.error { color:var(--danger); } #message.success { color:var(--ok); } .full { grid-column:1/-1; } @media(max-width:760px) { main { padding:14px; } .grid { grid-template-columns:1fr; } .timeline-card { order:2; } .controls-card { order:3; } .cues-card { order:4; } .lamp-grid { grid-template-columns:repeat(3,1fr); } .row { flex-wrap:wrap; } #time { margin-left:0; flex-basis:100%; } .card { padding:14px; } input[type="text"],input[type="number"] { font-size:16px; } button,.button-label { min-height:44px; } .transport button { flex:1 1 42%; } .events-actions { align-items:stretch; } .events-actions > * { width:100%; } .events-actions span { display:flex; gap:8px; } .events-actions span > * { flex:1; text-align:center; } }
@@ -25,6 +25,7 @@
       <label for="audioFile">Select an audio file</label><input id="audioFile" type="file" accept="audio/*">
       <audio id="audio" preload="metadata"></audio>
       <label for="seekBar" style="margin-top:12px">Playback position</label><input id="seekBar" class="seek-bar" type="range" min="0" max="0" step="0.1" value="0" disabled>
+      <label class="awake-control"><input id="keepAwake" type="checkbox" checked> Keep screen awake <span id="wakeStatus"></span></label>
       <div class="transport"><button id="back">−10 sec</button><button id="forward">+10 sec</button><button id="play" class="primary" disabled>▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>↺ Reset</button><span id="time">00:00.0 / 00:00.0</span></div>
     </div>
     <div class="card controls-card">
@@ -66,6 +67,30 @@
     const element = $('message');
     element.textContent = text;
     element.className = kind;
+  }
+
+  let wakeLock = null;
+  async function requestWakeLock() {
+    if (!$('keepAwake').checked || document.visibilityState !== 'visible') return;
+    if (!('wakeLock' in navigator)) {
+      $('wakeStatus').textContent = '(not supported by this browser)';
+      return;
+    }
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      $('wakeStatus').textContent = '(screen awake)';
+      wakeLock.addEventListener('release', () => {
+        wakeLock = null;
+        if ($('keepAwake').checked) $('wakeStatus').textContent = '(screen lock released)';
+      });
+    } catch (error) {
+      $('wakeStatus').textContent = '(tap a control to enable)';
+    }
+  }
+  async function releaseWakeLock() {
+    if (wakeLock) await wakeLock.release();
+    wakeLock = null;
+    $('wakeStatus').textContent = '(off)';
   }
 
   // Controller endpoint contract: /switch?on=ab&off=cde
@@ -219,6 +244,16 @@
   $('clearEvents').onclick=()=>{if(state.events.length&&confirm('Remove all cues?')){state.events=[];renderEvents();message('All cues removed.','success');}};
   $('export').onclick=()=>{if(!validEvents())return; const payload={version:1,duration:Number(state.duration.toFixed(3)),events:state.events}; const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'})); const link=document.createElement('a'); link.href=url; link.download='lamp-cues.json'; link.click(); URL.revokeObjectURL(url); message('Cue schedule exported as lamp-cues.json.','success');};
   $('import').onchange=async e=>{const file=e.target.files[0]; e.target.value=''; if(!file)return; if(!state.duration)return message('Select the matching audio file before importing cues.','error'); try { const payload=JSON.parse(await file.text()); if(!payload||!Array.isArray(payload.events))throw new Error('This is not a lamp-cues JSON file.'); const imported=payload.events.map((cue,index)=>{const lamp=Number(cue.lamp),start=Number(cue.start),end=Number(cue.end); if(!Number.isInteger(lamp)||lamp<1||lamp>5||!Number.isFinite(start)||!Number.isFinite(end))throw new Error(`Cue ${index+1} has invalid lamp or time values.`); return {lamp,start,end};}); const previous=state.events; state.events=imported; if(!validEvents(false)){state.events=previous;throw new Error(`Cues are invalid, overlap, or do not fit the ${fmt(state.duration)} audio duration.`);} renderEvents(); message(`Imported ${imported.length} cue${imported.length===1?'':'s'} from ${file.name}.`,'success'); } catch(err) { message(`Import failed: ${err.message}`,'error'); }};
+  $('keepAwake').addEventListener('change', event => {
+    if (event.target.checked) requestWakeLock();
+    else releaseWakeLock();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+  // Browsers may require a user gesture before they grant a wake lock.
+  document.addEventListener('pointerdown', requestWakeLock, { once: true });
+  requestWakeLock();
   renderLamps(); renderTimeline();
 })();
 </script>
