@@ -31,7 +31,7 @@
       <h2>Manual lamp control</h2>
       <div class="lamp-grid" id="lamps"></div>
       <p class="hint">Click a lamp to toggle it immediately. The scheduled state takes over when audio plays or seeks.</p>
-      <div class="row"><div><label for="eventStart">Start (mm:ss)</label><input id="eventStart" type="text" inputmode="decimal" placeholder="00:00.0" value="00:00.0"></div><div><label for="eventEnd">Stop (mm:ss)</label><input id="eventEnd" type="text" inputmode="decimal" placeholder="00:01.0" value="00:01.0"></div></div>
+      <div class="row"><div><label for="eventStart">Start (mm:ss)</label><input id="eventStart" type="text" inputmode="text" placeholder="00:00.0" value="00:00.0"></div><div><label for="eventEnd">Stop (mm:ss)</label><input id="eventEnd" type="text" inputmode="text" placeholder="00:01.0" value="00:01.0"></div></div>
       <label style="margin-top:12px">Add this cue to</label><div class="lamp-grid" id="cueLamps"></div>
     </div>
     <div class="card full timeline-card">
@@ -84,7 +84,7 @@
     for(let i=1;i<sorted.length;i++) if(sorted[i].lamp===sorted[i-1].lamp && sorted[i].start < sorted[i-1].end-.001) { if(show) message(`Lamp ${sorted[i].lamp} has overlapping cues. Edit or remove one.`, 'error'); return false; }
     if(show) message(`${state.events.length} cue${state.events.length===1?'':'s'} valid.`, 'success'); return true;
   }
-  function renderEvents() { state.events.sort((a,b)=>a.lamp-b.lamp||a.start-b.start); const rows=$('eventRows'); rows.innerHTML=Array.from({length:5},(_,lampIndex)=>{const lamp=lampIndex+1,cues=state.events.filter(e=>e.lamp===lamp); const heading=`<tr class="lamp-group"><td colspan="5">Lamp ${lamp} cues</td></tr>`; const cueRows=cues.length ? cues.map((e,cueIndex)=>{const i=state.events.indexOf(e);return `<tr><td>Cue ${cueIndex+1}</td><td><input data-i="${i}" data-k="start" type="text" inputmode="decimal" value="${fmt(e.start)}"></td><td><input data-i="${i}" data-k="end" type="text" inputmode="decimal" value="${fmt(e.end)}"></td><td>${(e.end-e.start).toFixed(1)} s</td><td><button class="danger" data-delete="${i}">Remove</button></td></tr>`;}).join('') : '<tr><td colspan="5" class="empty-cues">No cues for this lamp.</td></tr>'; return heading+cueRows;}).join(''); renderTimeline(); }
+  function renderEvents() { state.events.sort((a,b)=>a.lamp-b.lamp||a.start-b.start); const rows=$('eventRows'); rows.innerHTML=Array.from({length:5},(_,lampIndex)=>{const lamp=lampIndex+1,cues=state.events.filter(e=>e.lamp===lamp); const heading=`<tr class="lamp-group"><td colspan="5">Lamp ${lamp} cues</td></tr>`; const cueRows=cues.length ? cues.map((e,cueIndex)=>{const i=state.events.indexOf(e);return `<tr><td>Cue ${cueIndex+1}</td><td><input data-i="${i}" data-k="start" type="text" inputmode="text" value="${fmt(e.start)}"></td><td><input data-i="${i}" data-k="end" type="text" inputmode="text" value="${fmt(e.end)}"></td><td>${(e.end-e.start).toFixed(1)} s</td><td><button class="danger" data-delete="${i}">Remove</button></td></tr>`;}).join('') : '<tr><td colspan="5" class="empty-cues">No cues for this lamp.</td></tr>'; return heading+cueRows;}).join(''); renderTimeline(); }
   function renderTimeline() {
     const duration = state.duration || 1;
     const tracks = $('tracks');
