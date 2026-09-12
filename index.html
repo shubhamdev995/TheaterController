@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theatre Controller</title>
+  <style>
+    :root { color-scheme: dark; --bg:#10151d; --panel:#19212d; --line:#344154; --text:#eff5ff; --muted:#9baabd; --accent:#65d6ff; --danger:#ff7890; --ok:#77e1a8; }
+    * { box-sizing:border-box; } body { margin:0; font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif; color:var(--text); background:linear-gradient(135deg,#10151d,#172333); }
+    main { max-width:1200px; margin:auto; padding:24px; } h1 { margin:0 0 4px; font-size:clamp(1.5rem,4vw,2.2rem); } h2 { margin:0 0 14px; font-size:1rem; } .sub,.hint { color:var(--muted); margin:0 0 20px; } .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; } .card { background:rgba(25,33,45,.96); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 12px 35px #0002; }
+    label { display:block; font-size:.8rem; color:var(--muted); margin-bottom:5px; } input,button { font:inherit; } input[type="text"],input[type="number"],input[type="file"] { width:100%; color:var(--text); background:#0f1620; border:1px solid var(--line); border-radius:8px; padding:9px; } input:focus { outline:2px solid var(--accent); outline-offset:1px; } button,.button-label { cursor:pointer; border:1px solid var(--line); border-radius:8px; padding:9px 12px; color:var(--text); background:#263346; } button:hover:not(:disabled),.button-label:hover { border-color:var(--accent); } button:disabled { opacity:.45; cursor:not-allowed; } button.primary,.button-label.primary { background:#12799c; border-color:#28bce9; } button.danger { color:#ffd9df; border-color:#8e4052; background:#4c2631; } .button-label { display:inline-block; font-size:15px; }
+    .row { display:flex; gap:9px; align-items:end; } .row > * { min-width:0; flex:1; } .row button { flex:0 0 auto; } audio { width:100%; margin-top:12px; } .seek-bar { display:block; width:100%; height:14px; margin:14px 0 4px; accent-color:var(--accent); cursor:pointer; } .transport { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; } #time { margin-left:auto; align-self:center; color:var(--accent); font-variant-numeric:tabular-nums; }
+    .lamp-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; } .lamp { min-height:80px; border-width:2px; } .lamp .bulb { display:block; font-size:1.6rem; filter:grayscale(1); } .lamp.on { color:#132018; background:var(--ok); border-color:#b6ffd5; } .lamp.on .bulb { filter:none; } .lamp small { display:block; margin-top:3px; } .cue-button { min-height:58px; color:#bfefff; background:#183a4d; border-color:#2b9ec7; } .cue-button .plus { display:block; font-size:1.35rem; line-height:1; }
+    .timeline-wrap { overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch; touch-action:pan-x; } .timeline { min-width:740px; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#101720; } .ruler { height:32px; border-bottom:1px solid var(--line); position:relative; color:var(--muted); font-size:.72rem; } .tick { position:absolute; bottom:3px; transform:translateX(-50%); } .track { height:48px; border-bottom:1px solid #273245; position:relative; padding:14px 10px; color:var(--muted); font-size:.8rem; } .track:last-child { border:0; } .event { position:absolute; top:8px; height:30px; min-width:5px; border:0; padding:0 5px; border-radius:5px; background:var(--lamp); color:#061017; overflow:hidden; white-space:nowrap; font-size:.72rem; text-align:left; } .playhead { position:absolute; top:0; bottom:0; width:2px; background:#ff617c; pointer-events:none; z-index:5; } .playhead::before { content:""; position:absolute; top:0; left:-4px; border:5px solid transparent; border-top-color:#ff617c; }
+    table { width:100%; border-collapse:collapse; } th,td { padding:8px 5px; border-bottom:1px solid #2a3547; text-align:left; vertical-align:middle; } th { color:var(--muted); font-weight:500; font-size:.78rem; } td input { min-width:73px; padding:7px; } .lamp-group td { padding:9px 5px; color:var(--text); background:#202a38; font-weight:650; } .empty-cues { color:var(--muted); font-style:italic; } .events-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-top:14px; } #message { min-height:1.4em; margin:12px 0 0; color:var(--muted); } #message.error { color:var(--danger); } #message.success { color:var(--ok); } .full { grid-column:1/-1; } @media(max-width:760px) { main { padding:14px; } .grid { grid-template-columns:1fr; } .timeline-card { order:2; } .controls-card { order:3; } .cues-card { order:4; } .lamp-grid { grid-template-columns:repeat(3,1fr); } .row { flex-wrap:wrap; } #time { margin-left:0; flex-basis:100%; } .card { padding:14px; } input[type="text"],input[type="number"] { font-size:16px; } button,.button-label { min-height:44px; } .transport button { flex:1 1 42%; } .events-actions { align-items:stretch; } .events-actions > * { width:100%; } .events-actions span { display:flex; gap:8px; } .events-actions span > * { flex:1; text-align:center; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Theatre Controller</h1>
+  <p class="sub">Create lamp cues against a local audio track. Cues are sent to the controller while playback crosses their start and stop times.</p>
+  <section class="grid">
+    <div class="card">
+      <h2>Audio</h2>
+      <label for="audioFile">Select an audio file</label><input id="audioFile" type="file" accept="audio/*">
+      <audio id="audio" preload="metadata"></audio>
+      <label for="seekBar" style="margin-top:12px">Playback position</label><input id="seekBar" class="seek-bar" type="range" min="0" max="0" step="0.1" value="0" disabled>
+      <div class="transport"><button id="back">−10 sec</button><button id="forward">+10 sec</button><button id="play" class="primary" disabled>▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>↺ Reset</button><span id="time">00:00.0 / 00:00.0</span></div>
+    </div>
+    <div class="card controls-card">
+      <h2>Manual lamp control</h2>
+      <div class="lamp-grid" id="lamps"></div>
+      <p class="hint">Click a lamp to toggle it immediately. The scheduled state takes over when audio plays or seeks.</p>
+      <div class="row"><div><label for="eventStart">Start (mm:ss)</label><input id="eventStart" type="text" inputmode="decimal" placeholder="00:00.0" value="00:00.0"></div><div><label for="eventEnd">Stop (mm:ss)</label><input id="eventEnd" type="text" inputmode="decimal" placeholder="00:01.0" value="00:01.0"></div></div>
+      <label style="margin-top:12px">Add this cue to</label><div class="lamp-grid" id="cueLamps"></div>
+    </div>
+    <div class="card full timeline-card">
+      <h2>Timeline</h2><div class="timeline-wrap" id="timelineWrap"><div class="timeline" id="timeline"><div class="ruler" id="ruler"></div><div id="tracks"></div><div class="playhead" id="playhead"></div></div></div>
+    </div>
+    <div class="card full cues-card">
+      <h2>Cues</h2>
+      <div style="overflow-x:auto"><table><thead><tr><th>Cue</th><th>Start</th><th>Stop</th><th>Duration</th><th></th></tr></thead><tbody id="eventRows"><tr><td colspan="5" class="hint">Select audio, then add cues.</td></tr></tbody></table></div>
+      <div class="events-actions"><button id="clearEvents" class="danger">Clear all cues</button><span><label class="button-label" for="import">Import cues JSON</label><input id="import" type="file" accept="application/json,.json" hidden> <button id="export" class="primary">Export cues as JSON</button></span></div>
+      <p id="message" role="status"></p>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const audio = $('audio');
+  const lampCodes = ['a', 'b', 'c', 'd', 'e']; // Lamp 1 through Lamp 5
+  const state = {
+    events: [],
+    lamps: [false, false, false, false, false],
+    lastTime: 0,
+    duration: 0,
+    objectUrl: null,
+    skipNextSeekSync: false
+  };
+  const colors = ['#65d6ff','#c39bff','#77e1a8','#ffd36d','#ff91b8'];
+  const fmt = n => Number.isFinite(n) ? `${String(Math.floor(n/60)).padStart(2,'0')}:${(n%60).toFixed(1).padStart(4,'0')}` : '00:00.0';
+  const parseTime = value => { const text=String(value).trim(); if(!text) return NaN; if(!text.includes(':')) return Number(text); const parts=text.split(':'); if(parts.length!==2 || !/^\d+$/.test(parts[0]) || !/^\d+(?:\.\d+)?$/.test(parts[1])) return NaN; const minutes=Number(parts[0]), seconds=Number(parts[1]); return seconds<60 ? minutes*60+seconds : NaN; };
+  function message(text, kind = '') {
+    const element = $('message');
+    element.textContent = text;
+    element.className = kind;
+  }
+
+  // Controller endpoint contract: /switch?on=ab&off=cde
+  // "a" is Lamp 1, "b" is Lamp 2, through "e" for Lamp 5.
+  async function sendSwitchCommand(onCodes, offCodes) {
+    if (!onCodes && !offCodes) return;
+
+    const url = `/switch?on=${onCodes}&off=${offCodes}`;
+    const response = await fetch(url, { method: 'GET', cache: 'no-store' });
+    if (!response.ok) throw new Error(`Controller returned HTTP ${response.status}`);
+  }
+  function renderLamps() { $('lamps').innerHTML = state.lamps.map((on,i) => `<button class="lamp ${on?'on':''}" data-lamp="${i+1}" aria-pressed="${on}"><span class="bulb">💡</span>Lamp ${i+1}<small>${on?'ON':'OFF'}</small></button>`).join(''); $('cueLamps').innerHTML=Array.from({length:5},(_,i)=>`<button class="cue-button" data-cue-lamp="${i+1}" aria-label="Add cue to Lamp ${i+1}"><span class="plus">＋</span>Add cue · Lamp ${i+1}</button>`).join(''); }
+  function validEvents(show=true) {
+    const max=state.duration, sorted=[...state.events].sort((a,b)=>a.lamp-b.lamp||a.start-b.start);
+    for (const e of sorted) if (!Number.isFinite(e.start)||!Number.isFinite(e.end)||e.start<0||e.end<=e.start||(max && e.end>max+.001)) { if(show) message(`Lamp ${e.lamp}: use a start ≥ 0 and a stop after start${max?` (within ${fmt(max)})`:''}.`,'error'); return false; }
+    for(let i=1;i<sorted.length;i++) if(sorted[i].lamp===sorted[i-1].lamp && sorted[i].start < sorted[i-1].end-.001) { if(show) message(`Lamp ${sorted[i].lamp} has overlapping cues. Edit or remove one.`, 'error'); return false; }
+    if(show) message(`${state.events.length} cue${state.events.length===1?'':'s'} valid.`, 'success'); return true;
+  }
+  function renderEvents() { state.events.sort((a,b)=>a.lamp-b.lamp||a.start-b.start); const rows=$('eventRows'); rows.innerHTML=Array.from({length:5},(_,lampIndex)=>{const lamp=lampIndex+1,cues=state.events.filter(e=>e.lamp===lamp); const heading=`<tr class="lamp-group"><td colspan="5">Lamp ${lamp} cues</td></tr>`; const cueRows=cues.length ? cues.map((e,cueIndex)=>{const i=state.events.indexOf(e);return `<tr><td>Cue ${cueIndex+1}</td><td><input data-i="${i}" data-k="start" type="text" inputmode="decimal" value="${fmt(e.start)}"></td><td><input data-i="${i}" data-k="end" type="text" inputmode="decimal" value="${fmt(e.end)}"></td><td>${(e.end-e.start).toFixed(1)} s</td><td><button class="danger" data-delete="${i}">Remove</button></td></tr>`;}).join('') : '<tr><td colspan="5" class="empty-cues">No cues for this lamp.</td></tr>'; return heading+cueRows;}).join(''); renderTimeline(); }
+  function renderTimeline() {
+    const duration = state.duration || 1;
+    const tracks = $('tracks');
+    const ruler = $('ruler');
+    // Eight pixels per second makes long audio tracks horizontally scrollable.
+    $('timeline').style.width = `${Math.max(740, Math.ceil(duration * 8))}px`;
+    ruler.innerHTML = '';
+    const ticks = Math.min(10, Math.max(1, Math.ceil(duration / 10)));
+    for (let i = 0; i <= ticks; i++) {
+      const time = (i / ticks) * duration;
+      ruler.innerHTML += `<span class="tick" style="left:${(i / ticks) * 100}%">${fmt(time)}</span>`;
+    }
+    tracks.innerHTML = Array.from({ length: 5 }, (_, index) => {
+      const events = state.events.filter(event => event.lamp === index + 1).map(event =>
+        `<button class="event" title="Lamp ${event.lamp}: ${fmt(event.start)}–${fmt(event.end)}" style="--lamp:${colors[index]};left:${(event.start / duration) * 100}%;width:${((event.end - event.start) / duration) * 100}%">${fmt(event.start)}–${fmt(event.end)}</button>`
+      ).join('');
+      return `<div class="track">Lamp ${index + 1}${events}</div>`;
+    }).join('');
+    updatePlayhead();
+  }
+  function keepPlayheadVisible(ratio) {
+    if (audio.paused) return;
+    const wrapper = $('timelineWrap');
+    const playheadX = ratio * $('timeline').offsetWidth;
+    const padding = Math.min(100, wrapper.clientWidth * 0.25);
+    const leftEdge = wrapper.scrollLeft + padding;
+    const rightEdge = wrapper.scrollLeft + wrapper.clientWidth - padding;
+
+    if (playheadX < leftEdge || playheadX > rightEdge) {
+      wrapper.scrollTo({ left: Math.max(0, playheadX - wrapper.clientWidth / 2), behavior: 'smooth' });
+    }
+  }
+  function updatePlayhead() { const ratio=state.duration ? Math.max(0,Math.min(1,audio.currentTime/state.duration)) : 0; $('playhead').style.left=`${ratio*100}%`; $('time').textContent=`${fmt(audio.currentTime)} / ${fmt(state.duration)}`; $('seekBar').value=audio.currentTime || 0; keepPlayheadVisible(ratio); }
+  function lampStatesForTime(time) {
+    return state.lamps.map((unused, index) => state.events.some(cue =>
+      cue.lamp === index + 1 && time >= cue.start && time < cue.end
+    ));
+  }
+
+  // Updates the UI first, then sends a single batched command to the controller.
+  async function applyLampStates(nextStates, force = false, quiet = true) {
+    const onCodes = [];
+    const offCodes = [];
+
+    nextStates.forEach((isOn, index) => {
+      if (!force && isOn === state.lamps[index]) return;
+      (isOn ? onCodes : offCodes).push(lampCodes[index]);
+    });
+
+    state.lamps = [...nextStates];
+    renderLamps();
+
+    try {
+      await sendSwitchCommand(onCodes.join(''), offCodes.join(''));
+      if (!quiet) message('Lamp state updated.', 'success');
+    } catch (error) {
+      message(`Lamp state changed locally, but the controller could not be reached: ${error.message}`, 'error');
+    }
+  }
+
+  function syncLampsToAudio(time, force = false) {
+    applyLampStates(lampStatesForTime(time), force, true);
+    state.lastTime = time;
+  }
+  $('audioFile').addEventListener('change', ev=>{ const file=ev.target.files[0]; if(!file) return; if(!file.type.startsWith('audio/')) return message('Please choose a valid audio file.','error'); if(state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl=URL.createObjectURL(file); audio.src=state.objectUrl; state.events=[]; message(`Loaded ${file.name}. Wait for its duration, then add cues.`,'success'); });
+  audio.addEventListener('loadedmetadata',()=>{ state.duration=audio.duration; ['play','stop'].forEach(id=>$(id).disabled=false); $('pause').disabled=true; $('seekBar').max=state.duration; $('seekBar').disabled=false; $('eventEnd').value=fmt(Math.min(1,state.duration)); renderEvents(); updatePlayhead(); });
+  audio.addEventListener('timeupdate', () => {
+    // This runs while audio is playing. Only changed lamps are sent to /switch.
+    syncLampsToAudio(audio.currentTime);
+    updatePlayhead();
+  });
+  audio.addEventListener('seeking', updatePlayhead);
+  audio.addEventListener('seeked', () => {
+    // A seek may jump over several cues, so send all five lamp states.
+    const force = !state.skipNextSeekSync;
+    state.skipNextSeekSync = false;
+    syncLampsToAudio(audio.currentTime, force);
+    updatePlayhead();
+  });
+  audio.addEventListener('ended', () => {
+    syncLampsToAudio(state.duration, true);
+    message('Audio ended; all scheduled lamps were updated.', 'success');
+  });
+  audio.addEventListener('play', () => { $('play').disabled = true; $('pause').disabled = false; });
+  audio.addEventListener('pause', () => { $('play').disabled = false; $('pause').disabled = true; });
+
+  $('play').onclick = async () => {
+    if (!state.duration || !validEvents()) return;
+    try { await audio.play(); }
+    catch (error) { message(`Could not play audio: ${error.message}`, 'error'); }
+  };
+  $('pause').onclick = () => audio.pause();
+  $('stop').onclick = () => {
+    audio.pause();
+    audio.currentTime = 0;
+    syncLampsToAudio(0, true);
+  };
+  function moveAudioBy(seconds) {
+    if (!state.duration) return;
+    state.skipNextSeekSync = true;
+    audio.currentTime = Math.max(0, Math.min(state.duration, audio.currentTime + seconds));
+    // Do not wait for the browser's seeked event before controlling the lamps.
+    syncLampsToAudio(audio.currentTime, true);
+    updatePlayhead();
+  }
+  $('back').onclick = () => moveAudioBy(-10);
+  $('forward').onclick = () => moveAudioBy(10);
+
+  $('seekBar').addEventListener('input', event => {
+    // Show the selected location immediately while the thumb is being dragged.
+    const selectedTime = Number(event.target.value);
+    $('time').textContent = `${fmt(selectedTime)} / ${fmt(state.duration)}`;
+    $('playhead').style.left = `${(selectedTime / state.duration) * 100}%`;
+  });
+  $('seekBar').addEventListener('change', event => {
+    state.skipNextSeekSync = true;
+    audio.currentTime = Number(event.target.value);
+    syncLampsToAudio(audio.currentTime, true);
+    updatePlayhead();
+  });
+
+  $('lamps').onclick = event => {
+    const button = event.target.closest('[data-lamp]');
+    if (!button) return;
+    const lampIndex = Number(button.dataset.lamp) - 1;
+    const nextStates = [...state.lamps];
+    nextStates[lampIndex] = !nextStates[lampIndex];
+    applyLampStates(nextStates, false, false);
+  };
+  $('cueLamps').onclick=e=>{const b=e.target.closest('[data-cue-lamp]'); if(!b)return; const lamp=+b.dataset.cueLamp,start=parseTime($('eventStart').value),end=parseTime($('eventEnd').value); if(!state.duration)return message('Select audio and wait for its duration before adding cues.','error'); if(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<=start||end>state.duration) return message(`Use mm:ss times from 00:00.0 to ${fmt(state.duration)}, with stop after start.`,'error'); state.events.push({lamp,start,end}); if(!validEvents(false)){state.events.pop();return message(`This cue overlaps an existing cue for Lamp ${lamp}.`,'error');} renderEvents(); message(`Cue added to Lamp ${lamp}.`,'success');};
+  $('eventRows').onchange=e=>{const input=e.target, i=+input.dataset.i; if(!Number.isInteger(i)||!input.dataset.k)return; const time=parseTime(input.value); if(!Number.isFinite(time)||time<0){message('Enter time as mm:ss, for example 01:30.5.','error');renderEvents();return;} const old=state.events[i][input.dataset.k]; state.events[i][input.dataset.k]=time; if(!validEvents(false)){state.events[i][input.dataset.k]=old;message('Cue times overlap or fall outside the audio duration.','error');} renderEvents();}; $('eventRows').onclick=e=>{const b=e.target.closest('[data-delete]');if(b){state.events.splice(+b.dataset.delete,1);renderEvents();}};
+  $('clearEvents').onclick=()=>{if(state.events.length&&confirm('Remove all cues?')){state.events=[];renderEvents();message('All cues removed.','success');}};
+  $('export').onclick=()=>{if(!validEvents())return; const payload={version:1,duration:Number(state.duration.toFixed(3)),events:state.events}; const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'})); const link=document.createElement('a'); link.href=url; link.download='lamp-cues.json'; link.click(); URL.revokeObjectURL(url); message('Cue schedule exported as lamp-cues.json.','success');};
+  $('import').onchange=async e=>{const file=e.target.files[0]; e.target.value=''; if(!file)return; if(!state.duration)return message('Select the matching audio file before importing cues.','error'); try { const payload=JSON.parse(await file.text()); if(!payload||!Array.isArray(payload.events))throw new Error('This is not a lamp-cues JSON file.'); const imported=payload.events.map((cue,index)=>{const lamp=Number(cue.lamp),start=Number(cue.start),end=Number(cue.end); if(!Number.isInteger(lamp)||lamp<1||lamp>5||!Number.isFinite(start)||!Number.isFinite(end))throw new Error(`Cue ${index+1} has invalid lamp or time values.`); return {lamp,start,end};}); const previous=state.events; state.events=imported; if(!validEvents(false)){state.events=previous;throw new Error(`Cues are invalid, overlap, or do not fit the ${fmt(state.duration)} audio duration.`);} renderEvents(); message(`Imported ${imported.length} cue${imported.length===1?'':'s'} from ${file.name}.`,'success'); } catch(err) { message(`Import failed: ${err.message}`,'error'); }};
+  renderLamps(); renderTimeline();
+})();
+</script>
+</body>
+</html>
