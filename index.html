@@ -12,7 +12,7 @@
     .row { display:flex; gap:9px; align-items:end; } .row > * { min-width:0; flex:1; } .row button { flex:0 0 auto; } audio { width:100%; margin-top:12px; } .seek-bar { display:block; width:100%; height:14px; margin:14px 0 4px; accent-color:var(--accent); cursor:pointer; } .awake-control { display:flex; align-items:center; gap:8px; margin:12px 0 0; color:var(--text); font-size:.9rem; } .awake-control input { width:18px; height:18px; accent-color:var(--accent); } #wakeStatus { color:var(--muted); font-size:.78rem; } .transport { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; } #time { margin-left:auto; align-self:center; color:var(--accent); font-variant-numeric:tabular-nums; }
     .lamp-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; } .lamp { min-height:80px; border-width:2px; } .lamp .bulb { display:block; font-size:1.6rem; filter:grayscale(1); } .lamp.on { color:#132018; background:var(--ok); border-color:#b6ffd5; } .lamp.on .bulb { filter:none; } .lamp small { display:block; margin-top:3px; } .cue-button { min-height:58px; color:#bfefff; background:#183a4d; border-color:#2b9ec7; } .cue-button .plus { display:block; font-size:1.35rem; line-height:1; }
     .timeline-wrap { overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch; touch-action:pan-x; } .timeline { min-width:740px; position:relative; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#101720; } .ruler { height:32px; border-bottom:1px solid var(--line); position:relative; color:var(--muted); font-size:.72rem; } .tick { position:absolute; bottom:3px; transform:translateX(-50%); } .track { height:48px; border-bottom:1px solid #273245; position:relative; padding:14px 10px; color:var(--muted); font-size:.8rem; } .track:last-child { border:0; } .event { position:absolute; top:8px; height:30px; min-width:5px; border:0; padding:0 5px; border-radius:5px; background:var(--lamp); color:#061017; overflow:hidden; white-space:nowrap; font-size:.72rem; text-align:left; } .playhead { position:absolute; top:0; bottom:0; width:2px; background:#ff617c; pointer-events:none; z-index:5; } .playhead::before { content:""; position:absolute; top:0; left:-4px; border:5px solid transparent; border-top-color:#ff617c; }
-    table { width:100%; border-collapse:collapse; } th,td { padding:8px 5px; border-bottom:1px solid #2a3547; text-align:left; vertical-align:middle; } th { color:var(--muted); font-weight:500; font-size:.78rem; } td input { min-width:73px; padding:7px; } .lamp-group td { padding:9px 5px; color:var(--text); background:#202a38; font-weight:650; } .empty-cues { color:var(--muted); font-style:italic; } .events-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-top:14px; } #message { min-height:1.4em; margin:12px 0 0; color:var(--muted); } #message.error { color:var(--danger); } #message.success { color:var(--ok); } .full { grid-column:1/-1; } @media(max-width:760px) { main { padding:14px; } .grid { grid-template-columns:1fr; } .timeline-card { order:2; } .controls-card { order:3; } .cues-card { order:4; } .lamp-grid { grid-template-columns:repeat(3,1fr); } .row { flex-wrap:wrap; } #time { margin-left:0; flex-basis:100%; } .card { padding:14px; } input[type="text"],input[type="number"] { font-size:16px; } button,.button-label { min-height:44px; } .transport button { flex:1 1 42%; } .events-actions { align-items:stretch; } .events-actions > * { width:100%; } .events-actions span { display:flex; gap:8px; } .events-actions span > * { flex:1; text-align:center; } }
+    table { width:100%; border-collapse:collapse; } th,td { padding:8px 5px; border-bottom:1px solid #2a3547; text-align:left; vertical-align:middle; } th { color:var(--muted); font-weight:500; font-size:.78rem; } td input { min-width:73px; padding:7px; } .lamp-group td { padding:9px 5px; color:var(--text); background:#202a38; font-weight:650; } .empty-cues { color:var(--muted); font-style:italic; } .events-actions { display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-top:14px; } #message { min-height:1.4em; margin:12px 0 0; color:var(--muted); } #message.error { color:var(--danger); } #message.success { color:var(--ok); } .trace-card summary { cursor:pointer; font-weight:650; } .trace-actions { margin:12px 0; } #traceLog { max-height:280px; overflow:auto; margin:0; padding:12px; border:1px solid var(--line); border-radius:8px; background:#0c1118; color:#c8d5e8; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; word-break:break-word; } .full { grid-column:1/-1; } @media(max-width:760px) { main { padding:14px; } .grid { grid-template-columns:1fr; } .timeline-card { order:2; } .controls-card { order:3; } .cues-card { order:4; } .trace-card { order:5; } .lamp-grid { grid-template-columns:repeat(3,1fr); } .row { flex-wrap:wrap; } #time { margin-left:0; flex-basis:100%; } .card { padding:14px; } input[type="text"],input[type="number"] { font-size:16px; } button,.button-label { min-height:44px; } .transport button { flex:1 1 42%; } .events-actions { align-items:stretch; } .events-actions > * { width:100%; } .events-actions span { display:flex; gap:8px; } .events-actions span > * { flex:1; text-align:center; } }
   </style>
 </head>
 <body>
@@ -23,6 +23,7 @@
     <div class="card">
       <h2>Audio</h2>
       <label for="audioFile">Select an audio file</label><input id="audioFile" type="file" accept="audio/*">
+      <div class="transport"><button id="loadEvents" class="primary" disabled>Load events to controller</button><span id="socketStatus" class="hint">Controller: connecting…</span></div>
       <audio id="audio" preload="metadata"></audio>
       <label for="seekBar" style="margin-top:12px">Playback position</label><input id="seekBar" class="seek-bar" type="range" min="0" max="0" step="0.1" value="0" disabled>
       <label class="awake-control"><input id="keepAwake" type="checkbox" checked> Keep screen awake <span id="wakeStatus"></span></label>
@@ -44,6 +45,11 @@
       <div class="events-actions"><button id="clearEvents" class="danger">Clear all cues</button><span><label class="button-label" for="import">Import cues JSON</label><input id="import" type="file" accept="application/json,.json" hidden> <button id="export" class="primary">Export cues as JSON</button></span></div>
       <p id="message" role="status"></p>
     </div>
+    <details class="card full trace-card">
+      <summary>Controller connection and event trace</summary>
+      <div class="trace-actions"><button id="clearTrace">Clear trace</button></div>
+      <pre id="traceLog" aria-live="polite">Trace is ready.</pre>
+    </details>
   </section>
 </main>
 <script>
@@ -58,7 +64,8 @@
     lastTime: 0,
     duration: 0,
     objectUrl: null,
-    skipNextSeekSync: false
+    skipNextSeekSync: false,
+    scheduleLoaded: false
   };
   const colors = ['#65d6ff','#c39bff','#77e1a8','#ffd36d','#ff91b8'];
   const fmt = n => Number.isFinite(n) ? `${String(Math.floor(n/60)).padStart(2,'0')}:${(n%60).toFixed(1).padStart(4,'0')}` : '00:00.0';
@@ -67,6 +74,16 @@
     const element = $('message');
     element.textContent = text;
     element.className = kind;
+  }
+  const traceEntries = [];
+  function trace(kind, detail) {
+    const timestamp = new Date().toLocaleTimeString();
+    const text = typeof detail === 'string' ? detail : JSON.stringify(detail);
+    traceEntries.push(`[${timestamp}] ${kind}: ${text}`);
+    if (traceEntries.length > 200) traceEntries.shift();
+    const log = $('traceLog');
+    log.textContent = traceEntries.join('\n');
+    log.scrollTop = log.scrollHeight;
   }
 
   let wakeLock = null;
@@ -93,14 +110,54 @@
     $('wakeStatus').textContent = '(off)';
   }
 
-  // Controller endpoint contract: /switch?on=ab&off=cde
-  // "a" is Lamp 1, "b" is Lamp 2, through "e" for Lamp 5.
-  async function sendSwitchCommand(onCodes, offCodes) {
-    if (!onCodes && !offCodes) return;
+  // WebSocket protocol, served by the controller at /ws.
+  // Lamps 1–5 are represented by a–e in controller messages.
+  let socket = null;
+  let socketPromise = null;
+  function webSocketUrl() {
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${location.host}/ws`;
+  }
+  function setSocketStatus(text, kind = '') {
+    const status = $('socketStatus');
+    status.textContent = `Controller: ${text}`;
+    status.className = `hint ${kind}`;
+  }
+  function connectWebSocket() {
+    if (socket && socket.readyState === WebSocket.OPEN) return Promise.resolve(socket);
+    if (socketPromise) return socketPromise;
 
-    const url = `/switch?on=${onCodes}&off=${offCodes}`;
-    const response = await fetch(url, { method: 'GET', cache: 'no-store' });
-    if (!response.ok) throw new Error(`Controller returned HTTP ${response.status}`);
+    socketPromise = new Promise((resolve, reject) => {
+      try { socket = new WebSocket(webSocketUrl()); }
+      catch (error) { socketPromise = null; reject(error); return; }
+      setSocketStatus('connecting…');
+      trace('SOCKET', `Connecting to ${webSocketUrl()}`);
+      socket.addEventListener('open', () => { setSocketStatus('connected', 'success'); trace('SOCKET', 'Connected'); socketPromise = null; resolve(socket); }, { once: true });
+      socket.addEventListener('error', () => { setSocketStatus('connection failed', 'error'); trace('ERROR', 'WebSocket connection failed'); socketPromise = null; reject(new Error('WebSocket connection failed')); }, { once: true });
+      socket.addEventListener('close', event => { setSocketStatus('disconnected', 'error'); trace('SOCKET', `Disconnected (code ${event.code})`); socket = null; socketPromise = null; });
+      socket.addEventListener('message', event => {
+        trace('RECEIVED', event.data);
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'lamp_state' && Array.isArray(data.lamps) && data.lamps.length === 5) {
+            state.lamps = data.lamps.map(Boolean);
+            renderLamps();
+          }
+        } catch { /* Ignore non-JSON controller status messages. */ }
+      });
+    });
+    return socketPromise;
+  }
+  async function sendControllerMessage(payload) {
+    try {
+      const connection = await connectWebSocket();
+      const message = { ...payload, clientTimestamp: Date.now() };
+      connection.send(JSON.stringify(message));
+      trace('SENT', message);
+    } catch (error) {
+      trace('ERROR', `${payload.type}: ${error.message}`);
+      throw error;
+    }
   }
   function renderLamps() { $('lamps').innerHTML = state.lamps.map((on,i) => `<button class="lamp ${on?'on':''}" data-lamp="${i+1}" aria-pressed="${on}"><span class="bulb">💡</span>Lamp ${i+1}<small>${on?'ON':'OFF'}</small></button>`).join(''); $('cueLamps').innerHTML=Array.from({length:5},(_,i)=>`<button class="cue-button" data-cue-lamp="${i+1}" aria-label="Add cue to Lamp ${i+1}"><span class="plus">＋</span>Add cue · Lamp ${i+1}</button>`).join(''); }
   function validEvents(show=true) {
@@ -149,55 +206,40 @@
     ));
   }
 
-  // Updates the UI first, then sends a single batched command to the controller.
-  async function applyLampStates(nextStates, force = false, quiet = true) {
-    const onCodes = [];
-    const offCodes = [];
-
-    nextStates.forEach((isOn, index) => {
-      if (!force && isOn === state.lamps[index]) return;
-      (isOn ? onCodes : offCodes).push(lampCodes[index]);
-    });
-
+  // The browser updates its preview; the controller runs the loaded schedule.
+  function applyLampStates(nextStates) {
     state.lamps = [...nextStates];
     renderLamps();
-
-    try {
-      await sendSwitchCommand(onCodes.join(''), offCodes.join(''));
-      if (!quiet) message('Lamp state updated.', 'success');
-    } catch (error) {
-      message(`Lamp state changed locally, but the controller could not be reached: ${error.message}`, 'error');
-    }
   }
 
-  function syncLampsToAudio(time, force = false) {
-    applyLampStates(lampStatesForTime(time), force, true);
+  function syncLampsToAudio(time) {
+    applyLampStates(lampStatesForTime(time));
     state.lastTime = time;
   }
-  $('audioFile').addEventListener('change', ev=>{ const file=ev.target.files[0]; if(!file) return; if(!file.type.startsWith('audio/')) return message('Please choose a valid audio file.','error'); if(state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl=URL.createObjectURL(file); audio.src=state.objectUrl; state.events=[]; message(`Loaded ${file.name}. Wait for its duration, then add cues.`,'success'); });
-  audio.addEventListener('loadedmetadata',()=>{ state.duration=audio.duration; ['play','stop'].forEach(id=>$(id).disabled=false); $('pause').disabled=true; $('seekBar').max=state.duration; $('seekBar').disabled=false; $('eventEnd').value=fmt(Math.min(1,state.duration)); renderEvents(); updatePlayhead(); });
+  $('audioFile').addEventListener('change', ev=>{ const file=ev.target.files[0]; if(!file) return; if(!file.type.startsWith('audio/')) return message('Please choose a valid audio file.','error'); if(state.objectUrl) URL.revokeObjectURL(state.objectUrl); state.objectUrl=URL.createObjectURL(file); audio.src=state.objectUrl; state.events=[]; state.scheduleLoaded=false; message(`Loaded ${file.name}. Wait for its duration, then add cues.`,'success'); });
+  audio.addEventListener('loadedmetadata',()=>{ state.duration=audio.duration; ['play','stop','loadEvents'].forEach(id=>$(id).disabled=false); $('pause').disabled=true; $('seekBar').max=state.duration; $('seekBar').disabled=false; $('eventEnd').value=fmt(Math.min(1,state.duration)); renderEvents(); updatePlayhead(); });
   audio.addEventListener('timeupdate', () => {
-    // This runs while audio is playing. Only changed lamps are sent to /switch.
     syncLampsToAudio(audio.currentTime);
     updatePlayhead();
   });
   audio.addEventListener('seeking', updatePlayhead);
   audio.addEventListener('seeked', () => {
-    // A seek may jump over several cues, so send all five lamp states.
-    const force = !state.skipNextSeekSync;
     state.skipNextSeekSync = false;
-    syncLampsToAudio(audio.currentTime, force);
+    syncLampsToAudio(audio.currentTime);
+    sendControllerMessage({ type: 'seek', time: Number(audio.currentTime.toFixed(3)) }).catch(error => message(`Could not send seek: ${error.message}`, 'error'));
     updatePlayhead();
   });
   audio.addEventListener('ended', () => {
-    syncLampsToAudio(state.duration, true);
-    message('Audio ended; all scheduled lamps were updated.', 'success');
+    syncLampsToAudio(state.duration);
+    sendControllerMessage({ type: 'ended', time: Number(state.duration.toFixed(3)) }).catch(() => {});
+    message('Audio ended.', 'success');
   });
-  audio.addEventListener('play', () => { $('play').disabled = true; $('pause').disabled = false; });
-  audio.addEventListener('pause', () => { $('play').disabled = false; $('pause').disabled = true; });
+  audio.addEventListener('play', () => { $('play').disabled = true; $('pause').disabled = false; sendControllerMessage({ type: 'play', time: Number(audio.currentTime.toFixed(3)) }).catch(error => message(`Could not send play: ${error.message}`, 'error')); });
+  audio.addEventListener('pause', () => { $('play').disabled = false; $('pause').disabled = true; if (state.duration) sendControllerMessage({ type: 'pause', time: Number(audio.currentTime.toFixed(3)) }).catch(() => {}); });
 
   $('play').onclick = async () => {
     if (!state.duration || !validEvents()) return;
+    if (!state.scheduleLoaded) return message('Tap “Load events to controller” before playing.', 'error');
     try { await audio.play(); }
     catch (error) { message(`Could not play audio: ${error.message}`, 'error'); }
   };
@@ -205,14 +247,16 @@
   $('stop').onclick = () => {
     audio.pause();
     audio.currentTime = 0;
-    syncLampsToAudio(0, true);
+    syncLampsToAudio(0);
+    sendControllerMessage({ type: 'reset', time: 0 }).catch(error => message(`Could not send reset: ${error.message}`, 'error'));
   };
   function moveAudioBy(seconds) {
     if (!state.duration) return;
     state.skipNextSeekSync = true;
     audio.currentTime = Math.max(0, Math.min(state.duration, audio.currentTime + seconds));
     // Do not wait for the browser's seeked event before controlling the lamps.
-    syncLampsToAudio(audio.currentTime, true);
+    syncLampsToAudio(audio.currentTime);
+    sendControllerMessage({ type: seconds > 0 ? 'forward' : 'backward', seconds: Math.abs(seconds), time: Number(audio.currentTime.toFixed(3)) }).catch(error => message(`Could not send movement: ${error.message}`, 'error'));
     updatePlayhead();
   }
   $('back').onclick = () => moveAudioBy(-10);
@@ -227,7 +271,7 @@
   $('seekBar').addEventListener('change', event => {
     state.skipNextSeekSync = true;
     audio.currentTime = Number(event.target.value);
-    syncLampsToAudio(audio.currentTime, true);
+    syncLampsToAudio(audio.currentTime);
     updatePlayhead();
   });
 
@@ -237,13 +281,36 @@
     const lampIndex = Number(button.dataset.lamp) - 1;
     const nextStates = [...state.lamps];
     nextStates[lampIndex] = !nextStates[lampIndex];
-    applyLampStates(nextStates, false, false);
+    applyLampStates(nextStates);
+    sendControllerMessage({ type: 'manual_lamp', lamp: lampCodes[lampIndex], on: nextStates[lampIndex], time: Number(audio.currentTime.toFixed(3)) }).catch(error => message(`Could not change Lamp ${lampIndex + 1}: ${error.message}`, 'error'));
   };
-  $('cueLamps').onclick=e=>{const b=e.target.closest('[data-cue-lamp]'); if(!b)return; const lamp=+b.dataset.cueLamp,start=parseTime($('eventStart').value),end=parseTime($('eventEnd').value); if(!state.duration)return message('Select audio and wait for its duration before adding cues.','error'); if(!Number.isFinite(start)||!Number.isFinite(end)) return message('Time can contain numbers only: use mm:ss, for example 01:30.5.','error'); if(start<0||end<=start||end>state.duration) return message(`Use times from 00:00.0 to ${fmt(state.duration)}, with stop after start.`,'error'); state.events.push({lamp,start,end}); if(!validEvents(false)){state.events.pop();return message(`This cue overlaps an existing cue for Lamp ${lamp}.`,'error');} renderEvents(); message(`Cue added to Lamp ${lamp}.`,'success');};
-  $('eventRows').onchange=e=>{const input=e.target, i=+input.dataset.i; if(!Number.isInteger(i)||!input.dataset.k)return; const time=parseTime(input.value); if(!Number.isFinite(time)||time<0){message('Time can contain numbers only: use mm:ss, for example 01:30.5.','error');renderEvents();return;} const old=state.events[i][input.dataset.k]; state.events[i][input.dataset.k]=time; if(!validEvents(false)){state.events[i][input.dataset.k]=old;message('Cue times overlap or fall outside the audio duration.','error');} renderEvents();}; $('eventRows').onclick=e=>{const b=e.target.closest('[data-delete]');if(b){state.events.splice(+b.dataset.delete,1);renderEvents();}};
-  $('clearEvents').onclick=()=>{if(state.events.length&&confirm('Remove all cues?')){state.events=[];renderEvents();message('All cues removed.','success');}};
+  $('cueLamps').onclick=e=>{const b=e.target.closest('[data-cue-lamp]'); if(!b)return; const lamp=+b.dataset.cueLamp,start=parseTime($('eventStart').value),end=parseTime($('eventEnd').value); if(!state.duration)return message('Select audio and wait for its duration before adding cues.','error'); if(!Number.isFinite(start)||!Number.isFinite(end)) return message('Time can contain numbers only: use mm:ss, for example 01:30.5.','error'); if(start<0||end<=start||end>state.duration) return message(`Use times from 00:00.0 to ${fmt(state.duration)}, with stop after start.`,'error'); state.events.push({lamp,start,end}); if(!validEvents(false)){state.events.pop();return message(`This cue overlaps an existing cue for Lamp ${lamp}.`,'error');} state.scheduleLoaded=false; renderEvents(); message(`Cue added to Lamp ${lamp}. Load events again before playing.`,'success');};
+  $('eventRows').onchange=e=>{const input=e.target, i=+input.dataset.i; if(!Number.isInteger(i)||!input.dataset.k)return; const time=parseTime(input.value); if(!Number.isFinite(time)||time<0){message('Time can contain numbers only: use mm:ss, for example 01:30.5.','error');renderEvents();return;} const old=state.events[i][input.dataset.k]; state.events[i][input.dataset.k]=time; if(!validEvents(false)){state.events[i][input.dataset.k]=old;message('Cue times overlap or fall outside the audio duration.','error');} else {state.scheduleLoaded=false;message('Cue changed. Load events again before playing.','success');} renderEvents();}; $('eventRows').onclick=e=>{const b=e.target.closest('[data-delete]');if(b){state.events.splice(+b.dataset.delete,1);state.scheduleLoaded=false;renderEvents();message('Cue removed. Load events again before playing.','success');}};
+  $('loadEvents').onclick = async () => {
+    if (!state.duration || !validEvents()) return;
+    const events = state.events.map(event => ({
+      lamp: lampCodes[event.lamp - 1],
+      start: Number(event.start.toFixed(3)),
+      end: Number(event.end.toFixed(3))
+    }));
+    try {
+      await sendControllerMessage({ type: 'load_events', version: 1, duration: Number(state.duration.toFixed(3)), events });
+      state.scheduleLoaded = true;
+      await sendControllerMessage({ type: 'sync', time: Number(audio.currentTime.toFixed(3)), playing: !audio.paused });
+      message(`Loaded ${events.length} cue${events.length === 1 ? '' : 's'} to the controller.`, 'success');
+    } catch (error) {
+      message(`Could not load events: ${error.message}`, 'error');
+    }
+  };
+  setInterval(() => {
+    if (!audio.paused && state.scheduleLoaded) {
+      sendControllerMessage({ type: 'sync', time: Number(audio.currentTime.toFixed(3)), playing: true }).catch(() => {});
+    }
+  }, 2000);
+  $('clearEvents').onclick=()=>{if(state.events.length&&confirm('Remove all cues?')){state.events=[];state.scheduleLoaded=false;renderEvents();message('All cues removed. Load events again before playing.','success');}};
   $('export').onclick=()=>{if(!validEvents())return; const payload={version:1,duration:Number(state.duration.toFixed(3)),events:state.events}; const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'})); const link=document.createElement('a'); link.href=url; link.download='lamp-cues.json'; link.click(); URL.revokeObjectURL(url); message('Cue schedule exported as lamp-cues.json.','success');};
-  $('import').onchange=async e=>{const file=e.target.files[0]; e.target.value=''; if(!file)return; if(!state.duration)return message('Select the matching audio file before importing cues.','error'); try { const payload=JSON.parse(await file.text()); if(!payload||!Array.isArray(payload.events))throw new Error('This is not a lamp-cues JSON file.'); const imported=payload.events.map((cue,index)=>{const lamp=Number(cue.lamp),start=Number(cue.start),end=Number(cue.end); if(!Number.isInteger(lamp)||lamp<1||lamp>5||!Number.isFinite(start)||!Number.isFinite(end))throw new Error(`Cue ${index+1} has invalid lamp or time values.`); return {lamp,start,end};}); const previous=state.events; state.events=imported; if(!validEvents(false)){state.events=previous;throw new Error(`Cues are invalid, overlap, or do not fit the ${fmt(state.duration)} audio duration.`);} renderEvents(); message(`Imported ${imported.length} cue${imported.length===1?'':'s'} from ${file.name}.`,'success'); } catch(err) { message(`Import failed: ${err.message}`,'error'); }};
+  $('import').onchange=async e=>{const file=e.target.files[0]; e.target.value=''; if(!file)return; if(!state.duration)return message('Select the matching audio file before importing cues.','error'); try { const payload=JSON.parse(await file.text()); if(!payload||!Array.isArray(payload.events))throw new Error('This is not a lamp-cues JSON file.'); const imported=payload.events.map((cue,index)=>{const lamp=Number(cue.lamp),start=Number(cue.start),end=Number(cue.end); if(!Number.isInteger(lamp)||lamp<1||lamp>5||!Number.isFinite(start)||!Number.isFinite(end))throw new Error(`Cue ${index+1} has invalid lamp or time values.`); return {lamp,start,end};}); const previous=state.events; state.events=imported; if(!validEvents(false)){state.events=previous;throw new Error(`Cues are invalid, overlap, or do not fit the ${fmt(state.duration)} audio duration.`);} state.scheduleLoaded=false; renderEvents(); message(`Imported ${imported.length} cue${imported.length===1?'':'s'} from ${file.name}. Load events before playing.`,'success'); } catch(err) { message(`Import failed: ${err.message}`,'error'); }};
+  $('clearTrace').onclick = () => { traceEntries.length = 0; $('traceLog').textContent = 'Trace cleared.'; };
   $('keepAwake').addEventListener('change', event => {
     if (event.target.checked) requestWakeLock();
     else releaseWakeLock();
@@ -254,6 +321,7 @@
   // Browsers may require a user gesture before they grant a wake lock.
   document.addEventListener('pointerdown', requestWakeLock, { once: true });
   requestWakeLock();
+  connectWebSocket().catch(() => {});
   renderLamps(); renderTimeline();
 })();
 </script>
